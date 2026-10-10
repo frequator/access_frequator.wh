@@ -959,3 +959,16 @@ footer {
         gap: 2rem !important;
     }
 }
+
+/* --- HIDDEN YOUTUBE BACKGROUND PLAYER --- */
+.yt-player-container {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 300px;
+    height: 200px;
+    opacity: 0.001; /* Keeps visible to browser rendering engine without being seen */
+    pointer-events: none;
+    z-index: -9999;
+    overflow: hidden;
+}
