@@ -1,16 +1,14 @@
-// --- CONTINUOUS RANDOM YOUTUBE MUSIC PLAYER ---
+// --- CONTINUOUS RANDOM YOUTUBE MUSIC PLAYER WITH FADE EFFECTS ---
 const ytPlaylist = ["VLUkhtUH4mA", "n0XqaQWJp1c", "qkKbn7qZSno", "HPOWu76qAAc"];
 let player;
 let isPlayerReady = false;
+let isPlaying = false;
 let currentTrackIndex = Math.floor(Math.random() * ytPlaylist.length);
-
-// Default to enabled (true) for new visitors, or restore saved preference
-let savedSoundPref = localStorage.getItem('frequator_sound');
-let isPlaying = savedSoundPref === null ? true : savedSoundPref === 'true';
+let fadeInterval = null;
 
 const soundBtn = document.getElementById('sound-btn');
-const iconMute = document.getElementById('icon-mute');
-const iconPlay = document.getElementById('icon-play');
+const soundBtnOff = document.getElementById('sound-btn-off');
+const soundBtnOn = document.getElementById('sound-btn-on');
 
 function getRandomTrackId() {
     if (ytPlaylist.length <= 1) return ytPlaylist[0];
@@ -23,14 +21,14 @@ function getRandomTrackId() {
     return ytPlaylist[currentTrackIndex];
 }
 
-// Global API Callback triggered by YouTube API in head
+// Global YouTube API Ready Callback
 window.onYouTubeIframeAPIReady = function() {
     player = new YT.Player('yt-player', {
         height: '200',
         width: '300',
         videoId: ytPlaylist[currentTrackIndex],
         playerVars: {
-            'autoplay': 1,
+            'autoplay': 0,
             'controls': 0,
             'disablekb': 1,
             'fs': 0,
@@ -38,43 +36,59 @@ window.onYouTubeIframeAPIReady = function() {
             'playsinline': 1
         },
         events: {
-            'onReady': onPlayerReady,
+            'onReady': () => { isPlayerReady = true; },
             'onStateChange': onPlayerStateChange,
             'onError': onPlayerError
         }
     });
 };
 
-function attemptPlayAudio() {
-    if (!isPlayerReady || !player) return;
-    if (isPlaying) {
-        player.unMute();
-        player.setVolume(100);
-        player.playVideo();
-    } else {
-        player.pauseVideo();
-    }
-    updateButtonUI(isPlaying);
+// Smooth Volume Fade In
+function fadeInAudio(targetVol = 100, duration = 700) {
+    if (!player || typeof player.setVolume !== 'function') return;
+    clearInterval(fadeInterval);
+    
+    player.unMute();
+    player.setVolume(0);
+    player.playVideo();
+
+    let currentVol = 0;
+    const stepTime = 30;
+    const steps = duration / stepTime;
+    const increment = targetVol / steps;
+
+    fadeInterval = setInterval(() => {
+        currentVol += increment;
+        if (currentVol >= targetVol) {
+            player.setVolume(targetVol);
+            clearInterval(fadeInterval);
+        } else {
+            player.setVolume(Math.round(currentVol));
+        }
+    }, stepTime);
 }
 
-function onPlayerReady(event) {
-    isPlayerReady = true;
-    updateButtonUI(isPlaying);
-    if (isPlaying) {
-        attemptPlayAudio();
-    }
-}
+// Smooth Volume Fade Out
+function fadeOutAudio(duration = 700) {
+    if (!player || typeof player.setVolume !== 'function') return;
+    clearInterval(fadeInterval);
 
-// Global First User Interaction Handler (Unlocks Browser Autoplay Block)
-function handleFirstUserInteraction() {
-    if (isPlaying && isPlayerReady && player) {
-        attemptPlayAudio();
-    }
-}
+    let currentVol = player.getVolume ? player.getVolume() : 100;
+    const stepTime = 30;
+    const steps = duration / stepTime;
+    const decrement = currentVol / steps;
 
-// Unblocks audio the second the user clicks/taps anywhere on the website
-window.addEventListener('pointerdown', handleFirstUserInteraction, { once: true });
-window.addEventListener('keydown', handleFirstUserInteraction, { once: true });
+    fadeInterval = setInterval(() => {
+        currentVol -= decrement;
+        if (currentVol <= 0) {
+            player.setVolume(0);
+            player.pauseVideo();
+            clearInterval(fadeInterval);
+        } else {
+            player.setVolume(Math.round(currentVol));
+        }
+    }, stepTime);
+}
 
 function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.ENDED) {
@@ -83,40 +97,41 @@ function onPlayerStateChange(event) {
     }
 }
 
-function onPlayerError(event) {
+function onPlayerError() {
     const nextTrack = getRandomTrackId();
     if (player && player.loadVideoById) {
         player.loadVideoById(nextTrack);
     }
 }
 
-// Floating Sound Button Manual Toggle
+// Button Click Event Toggle
 if (soundBtn) {
     soundBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         if (!isPlayerReady || !player) return;
 
         if (isPlaying) {
-            player.pauseVideo();
+            // Turn Off: Fade out volume then pause
+            fadeOutAudio(600);
             isPlaying = false;
         } else {
+            // Turn On: Start unmuted with smooth fade-in
+            fadeInAudio(100, 700);
             isPlaying = true;
-            attemptPlayAudio();
         }
-        
-        localStorage.setItem('frequator_sound', isPlaying);
-        updateButtonUI(isPlaying);
+
+        updateSoundUI(isPlaying);
     });
 }
 
-function updateButtonUI(playing) {
+function updateSoundUI(playing) {
     if (playing) {
-        if (iconMute) iconMute.style.display = 'none';
-        if (iconPlay) iconPlay.style.display = 'block';
+        if (soundBtnOff) soundBtnOff.style.display = 'none';
+        if (soundBtnOn) soundBtnOn.style.display = 'flex';
         if (soundBtn) soundBtn.classList.add('playing');
     } else {
-        if (iconMute) iconMute.style.display = 'block';
-        if (iconPlay) iconPlay.style.display = 'none';
+        if (soundBtnOff) soundBtnOff.style.display = 'flex';
+        if (soundBtnOn) soundBtnOn.style.display = 'none';
         if (soundBtn) soundBtn.classList.remove('playing');
     }
 }
