@@ -970,3 +970,73 @@ footer {
     z-index: -9999;
     pointer-events: none;
 }
+
+/* --- FLOATING SOUND BUTTON & VISUALIZER MORPH --- */
+.sound-toggle-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 9999;
+    background: rgba(18, 18, 18, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(12px);
+    color: #ffffff;
+    border-radius: 50px;
+    padding: 0.65rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+}
+
+.sound-toggle-btn:hover {
+    border-color: #ffffff;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+}
+
+.sound-btn-content {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+}
+
+/* Active State: Morphs into a Compact Circle Visualizer */
+.sound-toggle-btn.playing {
+    padding: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+}
+
+/* Animated Equalizer Bars */
+.visualizer-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 18px;
+}
+
+.visualizer-bars .bar {
+    width: 3px;
+    background-color: #ffffff;
+    border-radius: 3px;
+    animation: equalizerBars 1.1s ease-in-out infinite alternate;
+}
+
+.visualizer-bars .bar-1 { height: 35%; animation-delay: 0.1s; }
+.visualizer-bars .bar-2 { height: 100%; animation-delay: 0.35s; }
+.visualizer-bars .bar-3 { height: 55%; animation-delay: 0.2s; }
+.visualizer-bars .bar-4 { height: 80%; animation-delay: 0.45s; }
+
+@keyframes equalizerBars {
+    0% { height: 20%; }
+    50% { height: 100%; }
+    100% { height: 35%; }
+}
