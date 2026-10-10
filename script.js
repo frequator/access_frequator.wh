@@ -1,3 +1,21 @@
+// --- 0. THEME SWITCHER LOGIC ---
+function setTheme(themeName) {
+    document.body.setAttribute('data-theme', themeName);
+    localStorage.setItem('frequator_theme', themeName);
+
+    document.querySelectorAll('.theme-circle').forEach(circle => {
+        circle.classList.remove('active');
+    });
+
+    const activeCircle = document.querySelector(`.theme-${themeName}`);
+    if (activeCircle) activeCircle.classList.add('active');
+}
+
+(function initTheme() {
+    const savedTheme = localStorage.getItem('frequator_theme') || 'onyx';
+    setTheme(savedTheme);
+})();
+
 // --- 1. MUSIC EXPLOSION BUTTON EFFECT ---
 function triggerMusicExplosion(e) {
     const btn = e.currentTarget;
@@ -6,10 +24,10 @@ function triggerMusicExplosion(e) {
     const centerY = rect.height / 2;
 
     const monoSvgs = [
-        `<svg width="20" height="20" viewBox="0 0 24 24" fill="#ffffff"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>`,
-        `<svg width="20" height="20" viewBox="0 0 24 24" fill="#ffffff"><path d="M12 3v9.28c-.47-.17-.97-.28-1.5-.28C8.01 12 6 14.01 6 16.5S8.01 21 10.5 21c2.31 0 4.2-1.75 4.45-4H15V6h4V3h-7z"/></svg>`,
-        `<svg width="20" height="20" viewBox="0 0 24 24" fill="#ffffff"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>`,
-        `<svg width="20" height="20" viewBox="0 0 24 24" fill="#ffffff"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>`
+        `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>`,
+        `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v9.28c-.47-.17-.97-.28-1.5-.28C8.01 12 6 14.01 6 16.5S8.01 21 10.5 21c2.31 0 4.2-1.75 4.45-4H15V6h4V3h-7z"/></svg>`,
+        `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>`,
+        `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>`
     ];
 
     for (let i = 0; i < 18; i++) {
@@ -75,7 +93,7 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// --- 4. SCROLL REVEAL OBSERVER (SAFE INITIALIZATION) ---
+// --- 4. SCROLL REVEAL OBSERVER ---
 const observerOptions = { threshold: 0.05 };
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -89,7 +107,6 @@ function revealElements() {
     document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
 }
 
-// Run immediately and as a fallback when DOM loads
 revealElements();
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', revealElements);
@@ -142,8 +159,13 @@ if (particleContainer) {
         });
     }
 
+    function getParticleRgb() {
+        return getComputedStyle(document.body).getPropertyValue('--particle-rgb').trim() || '255, 255, 255';
+    }
+
     function drawNeuralNetwork() {
         ctx.clearRect(0, 0, width, height);
+        const rgb = getParticleRgb();
 
         for (let i = 0; i < particles.length; i++) {
             let p = particles[i];
@@ -167,7 +189,7 @@ if (particleContainer) {
 
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+            ctx.fillStyle = `rgba(${rgb}, 0.85)`;
             ctx.fill();
 
             if (mouseActive) {
@@ -180,7 +202,7 @@ if (particleContainer) {
                     ctx.moveTo(p.x, p.y);
                     ctx.lineTo(mouseX, mouseY);
                     const opacity = (1 - distM / 220) * 0.9;
-                    ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
+                    ctx.strokeStyle = `rgba(${rgb}, ${opacity})`;
                     ctx.lineWidth = 1.3;
                     ctx.stroke();
                 }
@@ -196,7 +218,7 @@ if (particleContainer) {
                     ctx.beginPath();
                     ctx.moveTo(p.x, p.y);
                     ctx.lineTo(p2.x, p2.y);
-                    ctx.strokeStyle = `rgba(255, 255, 255, ${(1 - dist / 120) * 0.3})`;
+                    ctx.strokeStyle = `rgba(${rgb}, ${(1 - dist / 120) * 0.3})`;
                     ctx.lineWidth = 0.6;
                     ctx.stroke();
                 }
@@ -208,17 +230,16 @@ if (particleContainer) {
     drawNeuralNetwork();
 }
 
-// --- 6. CONTINUOUS YOUTUBE MUSIC PLAYER WITH FADE EFFECTS ---
+// --- 6. CONTINUOUS YOUTUBE MUSIC PLAYER & SAFE API INITIALIZATION ---
 const ytPlaylist = ["VLUkhtUH4mA", "n0XqaQWJp1c", "qkKbn7qZSno", "HPOWu76qAAc"];
 let player;
 let isPlayerReady = false;
 let isPlaying = false;
+let pendingPlay = false;
 let currentTrackIndex = Math.floor(Math.random() * ytPlaylist.length);
 let fadeInterval = null;
 
 const soundBtn = document.getElementById('sound-btn');
-const soundBtnOff = document.getElementById('sound-btn-off');
-const soundBtnOn = document.getElementById('sound-btn-on');
 
 function getRandomTrackId() {
     if (ytPlaylist.length <= 1) return ytPlaylist[0];
@@ -231,7 +252,24 @@ function getRandomTrackId() {
     return ytPlaylist[currentTrackIndex];
 }
 
-window.onYouTubeIframeAPIReady = function() {
+// DYNAMICALLY INJECT & SAFE-LOAD YOUTUBE IFRAME API
+function initYouTubePlayer() {
+    if (window.YT && window.YT.Player) {
+        createPlayer();
+    } else {
+        if (!document.getElementById('yt-api-script')) {
+            const tag = document.createElement('script');
+            tag.id = 'yt-api-script';
+            tag.src = "https://www.youtube.com/iframe_api";
+            const firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        }
+        window.onYouTubeIframeAPIReady = createPlayer;
+    }
+}
+
+function createPlayer() {
+    if (player) return;
     player = new YT.Player('yt-player', {
         height: '200',
         width: '300',
@@ -242,15 +280,22 @@ window.onYouTubeIframeAPIReady = function() {
             'disablekb': 1,
             'fs': 0,
             'modestbranding': 1,
-            'playsinline': 1
+            'playsinline': 1,
+            'enablejsapi': 1
         },
         events: {
-            'onReady': () => { isPlayerReady = true; },
+            'onReady': () => {
+                isPlayerReady = true;
+                if (pendingPlay) {
+                    pendingPlay = false;
+                    fadeInAudio(100, 700);
+                }
+            },
             'onStateChange': onPlayerStateChange,
             'onError': onPlayerError
         }
     });
-};
+}
 
 function fadeInAudio(targetVol = 100, duration = 700) {
     if (!player || typeof player.setVolume !== 'function') return;
@@ -311,17 +356,22 @@ function onPlayerError() {
     }
 }
 
+// TOGGLE SOUND & TRIGGER MORPH ANIMATION
 if (soundBtn) {
     soundBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        if (!isPlayerReady || !player) return;
 
         if (isPlaying) {
-            fadeOutAudio(600);
             isPlaying = false;
+            pendingPlay = false;
+            fadeOutAudio(500);
         } else {
-            fadeInAudio(100, 700);
             isPlaying = true;
+            if (isPlayerReady && player && typeof player.playVideo === 'function') {
+                fadeInAudio(100, 700);
+            } else {
+                pendingPlay = true;
+            }
         }
 
         updateSoundUI(isPlaying);
@@ -330,12 +380,11 @@ if (soundBtn) {
 
 function updateSoundUI(playing) {
     if (playing) {
-        if (soundBtnOff) soundBtnOff.style.display = 'none';
-        if (soundBtnOn) soundBtnOn.style.display = 'flex';
         if (soundBtn) soundBtn.classList.add('playing');
     } else {
-        if (soundBtnOff) soundBtnOff.style.display = 'flex';
-        if (soundBtnOn) soundBtnOn.style.display = 'none';
         if (soundBtn) soundBtn.classList.remove('playing');
     }
 }
+
+// INITIALIZE PLAYER ON SCRIPT LOAD
+initYouTubePlayer();
