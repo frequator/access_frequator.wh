@@ -1,4 +1,5 @@
-:root {
+/* --- THEME DEFINITIONS & VARIABLES --- */
+body[data-theme="onyx"], :root {
     --bg-base: #000000;
     --bg-surface: #0a0a0a;
     --bg-card: #111111;
@@ -6,6 +7,50 @@
     --text-muted: #888888;
     --border-color: #222222;
     --border-hover: #ffffff;
+    --btn-bg: #000000;
+    --btn-text: #ffffff;
+    --btn-border: #ffffff;
+    --btn-hover-bg: #ffffff;
+    --btn-hover-text: #000000;
+    --logo-filter: brightness(0) invert(1);
+    --particle-rgb: 255, 255, 255;
+}
+
+body[data-theme="orange"] {
+    --bg-base: #0f0702;
+    --bg-surface: #180c05;
+    --bg-card: #241208;
+    --text-main: #ffffff;
+    --text-muted: #ffb894;
+    --border-color: #ff5500;
+    --border-hover: #ff7733;
+    --btn-bg: #120600;
+    --btn-text: #ffffff;
+    --btn-border: #ff5500;
+    --btn-hover-bg: #ff5500;
+    --btn-hover-text: #ffffff;
+    --logo-filter: brightness(0) invert(1);
+    --particle-rgb: 255, 85, 0;
+}
+
+body[data-theme="white"] {
+    --bg-base: #f8f9fa;
+    --bg-surface: #ffffff;
+    --bg-card: #f1f3f5;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #cbd5e1;
+    --border-hover: #0f172a;
+    --btn-bg: #ffffff;
+    --btn-text: #0f172a;
+    --btn-border: #0f172a;
+    --btn-hover-bg: #0f172a;
+    --btn-hover-text: #ffffff;
+    --logo-filter: brightness(0);
+    --particle-rgb: 15, 23, 42;
+}
+
+:root {
     --transition-slower: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
     --transition-smooth: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     --transition-fast: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
@@ -30,6 +75,7 @@ body {
     position: relative;
     opacity: 0;
     animation: fadeInPage 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 @keyframes fadeInPage {
@@ -75,7 +121,7 @@ header {
     transform: translateX(-50%);
     width: 96%;
     max-width: 1440px;
-    background: rgba(10, 10, 10, 0.88);
+    background: var(--bg-surface);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--border-color);
@@ -85,7 +131,7 @@ header {
     align-items: center;
     padding: 0.8rem 2.2rem;
     z-index: 1000;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     transition: var(--transition-smooth);
 }
 
@@ -96,7 +142,7 @@ header {
     font-size: 1.25rem;
     font-weight: 800;
     letter-spacing: -0.5px;
-    color: #ffffff;
+    color: var(--text-main);
     text-decoration: none;
     overflow: hidden;
 }
@@ -104,7 +150,7 @@ header {
 .brand img {
     height: 32px;
     width: auto;
-    filter: brightness(0) invert(1);
+    filter: var(--logo-filter);
     flex-shrink: 0;
     transition: var(--transition-smooth);
 }
@@ -167,9 +213,9 @@ nav a:hover {
 }
 
 .btn-outline:hover {
-    background: #ffffff;
-    color: #000000;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    background: var(--text-main);
+    color: var(--bg-base);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
 }
 
 /* 3-LINE HAMBURGER MENU DROPDOWN */
@@ -235,12 +281,12 @@ nav a:hover {
     border-bottom: 1px solid var(--border-color);
     font-weight: 700;
     font-size: 0.95rem;
-    color: #ffffff;
+    color: var(--text-main);
 }
 
 .user-dropdown span {
     padding: 0.75rem 1.2rem;
-    color: #cccccc;
+    color: var(--text-muted);
     font-size: 0.88rem;
     display: block;
     cursor: pointer;
@@ -249,7 +295,7 @@ nav a:hover {
 
 .user-dropdown span:hover {
     background: rgba(255, 255, 255, 0.08);
-    color: #ffffff;
+    color: var(--text-main);
 }
 
 .dropdown-divider {
@@ -284,7 +330,7 @@ nav a:hover {
     letter-spacing: -2px;
     line-height: 1.08;
     margin-bottom: 1.5rem;
-    color: #ffffff;
+    color: var(--text-main);
 }
 
 .hero-content p {
@@ -332,7 +378,7 @@ nav a:hover {
     gap: 12px;
     font-weight: 800;
     font-size: 1.3rem;
-    color: #ffffff;
+    color: var(--text-main);
     letter-spacing: -0.5px;
     padding: 0.4rem 1rem;
     transition: var(--transition-fast);
@@ -344,10 +390,10 @@ nav a:hover {
 
 .trusted-badge-whop img {
     height: 32px;
-    filter: brightness(0) invert(1);
+    filter: var(--logo-filter);
 }
 
-/* --- CURATOR EXPLORER & BE PART OF OUR TEAM BUTTON --- */
+/* --- CURATOR EXPLORER --- */
 .explorer-dark-section {
     padding: 6rem 5%;
     position: relative;
@@ -365,7 +411,7 @@ nav a:hover {
     font-size: clamp(1.8rem, 3.8vw, 2.6rem);
     font-weight: 800;
     letter-spacing: -1px;
-    color: #ffffff;
+    color: var(--text-main);
     margin-bottom: 1.5rem;
 }
 
@@ -382,7 +428,7 @@ nav a:hover {
     display: flex;
     align-items: center;
     gap: 1rem;
-    background: rgba(17, 17, 17, 0.85);
+    background: var(--bg-card);
     border: 1px solid var(--border-color);
     padding: 0.5rem 1.4rem 0.5rem 0.5rem;
     border-radius: 50px;
@@ -393,8 +439,8 @@ nav a:hover {
 }
 
 .curator-badge-wrapper:hover {
-    border-color: #ffffff;
-    box-shadow: 0 0 25px rgba(255, 255, 255, 0.25);
+    border-color: var(--border-hover);
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.15);
     transform: translateY(-3px);
 }
 
@@ -402,8 +448,8 @@ nav a:hover {
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: #000000;
-    border: 1.5px solid #ffffff;
+    background: var(--bg-base);
+    border: 1.5px solid var(--border-color);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -415,7 +461,7 @@ nav a:hover {
     width: 24px;
     height: 24px;
     object-fit: contain;
-    filter: brightness(0) invert(1);
+    filter: var(--logo-filter);
 }
 
 .curator-info {
@@ -427,7 +473,7 @@ nav a:hover {
 .curator-name {
     font-weight: 800;
     font-size: 0.95rem;
-    color: #ffffff;
+    color: var(--text-main);
     letter-spacing: -0.2px;
 }
 
@@ -442,7 +488,7 @@ nav a:hover {
 .curator-stack-preview {
     display: flex;
     align-items: center;
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--bg-card);
     border: 1px dashed var(--border-color);
     padding: 0.75rem 1.4rem;
     border-radius: 50px;
@@ -464,9 +510,9 @@ nav a:hover {
 /* UNIFIED INVERTED HOVER BUTTON STYLE */
 .btn-invert-hover {
     position: relative;
-    background: #000000;
-    color: #ffffff;
-    border: 1.5px solid #ffffff;
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    border: 1.5px solid var(--btn-border);
     padding: 1.25rem 3rem;
     border-radius: 50px;
     font-size: 1.15rem;
@@ -477,7 +523,7 @@ nav a:hover {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     user-select: none;
     overflow: visible;
@@ -490,31 +536,34 @@ nav a:hover {
     display: inline-flex;
     align-items: center;
     gap: 14px;
-    color: #ffffff;
+    color: var(--btn-text);
     transition: color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-whop-logo {
     height: 24px;
     width: auto;
-    filter: brightness(0) invert(1);
+    filter: var(--logo-filter);
     transition: filter 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s ease;
 }
 
 .btn-invert-hover:hover {
-    background: #ffffff;
-    border-color: #ffffff;
+    background: var(--btn-hover-bg);
+    border-color: var(--btn-hover-bg);
     transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 0 35px rgba(255, 255, 255, 0.3), 0 15px 40px rgba(0, 0, 0, 0.9);
 }
 
 .btn-invert-hover:hover .btn-text-content {
-    color: #000000;
+    color: var(--btn-hover-text);
 }
 
-.btn-invert-hover:hover .btn-whop-logo {
+body[data-theme="white"] .btn-invert-hover:hover .btn-whop-logo {
+    filter: brightness(0) invert(1);
+}
+
+body[data-theme="onyx"] .btn-invert-hover:hover .btn-whop-logo,
+body[data-theme="orange"] .btn-invert-hover:hover .btn-whop-logo {
     filter: brightness(0);
-    transform: scale(1.05);
 }
 
 /* MONOCHROME PARTICLES */
@@ -523,9 +572,8 @@ nav a:hover {
     pointer-events: none;
     z-index: 2;
     font-size: 0.95rem;
-    color: #ffffff;
-    fill: #ffffff;
-    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.8));
+    color: var(--text-main);
+    fill: var(--text-main);
     animation: explodeTune 0.9s cubic-bezier(0.12, 0.8, 0.3, 1) forwards;
     transform: translate(-50%, -50%);
 }
@@ -543,7 +591,7 @@ nav a:hover {
 
 /* --- FOOTER & FREQUATOR BRANDING --- */
 footer {
-    background-color: #000000;
+    background-color: var(--bg-base);
     border-top: 1px solid var(--border-color);
     padding: 5rem 5% 2.5rem;
     position: relative;
@@ -565,7 +613,7 @@ footer {
     letter-spacing: 2px;
     text-transform: uppercase;
     margin-bottom: 1.2rem;
-    color: #ffffff;
+    color: var(--text-main);
 }
 
 .newsletter-form {
@@ -576,12 +624,12 @@ footer {
 }
 
 .newsletter-form input {
-    background: #111111;
+    background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-right: none;
     border-radius: 6px 0 0 6px;
     padding: 0.85rem 1.2rem;
-    color: #ffffff;
+    color: var(--text-main);
     outline: none;
     flex: 1;
     font-size: 0.9rem;
@@ -589,12 +637,12 @@ footer {
 }
 
 .newsletter-form input:focus {
-    border-color: #ffffff;
+    border-color: var(--border-hover);
 }
 
 .newsletter-form button {
-    background: #ffffff;
-    color: #000000;
+    background: var(--text-main);
+    color: var(--bg-base);
     border: none;
     padding: 0 1.6rem;
     font-weight: 800;
@@ -604,10 +652,6 @@ footer {
     border-radius: 0 6px 6px 0;
     cursor: pointer;
     transition: var(--transition-fast);
-}
-
-.newsletter-form button:hover {
-    background: #cccccc;
 }
 
 .newsletter-consent {
@@ -623,7 +667,7 @@ footer {
 }
 
 .newsletter-consent a {
-    color: #ffffff;
+    color: var(--text-main);
     text-decoration: underline;
 }
 
@@ -649,12 +693,12 @@ footer {
     gap: 0.8rem;
     font-size: 1.4rem;
     font-weight: 800;
-    color: #ffffff;
+    color: var(--text-main);
 }
 
 .footer-brand-logo img {
     height: 32px;
-    filter: brightness(0) invert(1);
+    filter: var(--logo-filter);
 }
 
 .social-icons-row {
@@ -672,7 +716,7 @@ footer {
 }
 
 .social-icons-row a:hover {
-    color: #ffffff;
+    color: var(--text-main);
 }
 
 .footer-nav-group {
@@ -691,7 +735,7 @@ footer {
     font-weight: 800;
     letter-spacing: -0.2px;
     margin-bottom: 1.2rem;
-    color: #ffffff;
+    color: var(--text-main);
 }
 
 .footer-col ul {
@@ -710,7 +754,7 @@ footer {
 }
 
 .footer-col a:hover, .footer-col span:hover {
-    color: #ffffff;
+    color: var(--text-main);
 }
 
 .giant-footer-branding {
@@ -728,7 +772,7 @@ footer {
     line-height: 0.9;
     text-transform: uppercase;
     color: transparent;
-    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.32);
+    -webkit-text-stroke: 1px var(--border-color);
     display: block;
     width: 100%;
     text-align: center;
@@ -740,8 +784,8 @@ footer {
 
 .giant-footer-branding:hover .giant-footer-text,
 .giant-footer-text:hover {
-    color: #ffffff;
-    -webkit-text-stroke: 1px #ffffff;
+    color: var(--text-main);
+    -webkit-text-stroke: 1px var(--text-main);
 }
 
 .footer-bottom-bar {
@@ -768,7 +812,7 @@ footer {
 }
 
 .footer-bottom-links a:hover {
-    color: #ffffff;
+    color: var(--text-main);
 }
 
 @media (max-width: 900px) {
@@ -787,7 +831,7 @@ footer {
     }
 }
 
-/* Off-screen active rendering container for YouTube */
+/* Off-screen YouTube container */
 .yt-player-container {
     position: fixed;
     bottom: 0;
@@ -800,52 +844,143 @@ footer {
     overflow: hidden;
 }
 
-/* --- FLOATING SOUND BUTTON & VISUALIZER MORPH --- */
+/* --- FLOATING THEME SELECTOR (BOTTOM-LEFT) --- */
+.theme-picker-container {
+    position: fixed;
+    bottom: 2rem;
+    left: 2rem;
+    z-index: 9999;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 50px;
+    padding: 0.6rem 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+    transition: var(--transition-smooth);
+}
+
+.theme-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    outline: none;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+}
+
+.theme-circle:hover {
+    transform: scale(1.25);
+}
+
+.theme-circle.active {
+    transform: scale(1.2);
+    border-color: var(--text-main);
+}
+
+.theme-white {
+    background: #ffffff;
+    box-shadow: inset 0 0 0 1px #cbd5e1;
+}
+
+.theme-orange {
+    background: #ff5500;
+}
+
+.theme-onyx {
+    background: #0d0d0d;
+    box-shadow: inset 0 0 0 1px #333333;
+}
+
+/* --- SMOOTH MORPHING SOUND BUTTON (BOTTOM-RIGHT) --- */
 .sound-toggle-btn {
     position: fixed;
     bottom: 2rem;
     right: 2rem;
     z-index: 9999;
-    background: rgba(18, 18, 18, 0.88);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    color: #ffffff;
+    color: var(--text-main);
     border-radius: 50px;
-    padding: 0.65rem 1.25rem;
+    width: 165px;
+    height: 48px;
+    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    user-select: none;
+    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                border-radius 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                background 0.35s ease,
+                border-color 0.35s ease,
+                box-shadow 0.35s ease,
+                transform 0.35s ease;
 }
 
 .sound-toggle-btn:hover {
-    border-color: #ffffff;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
+    border-color: var(--border-hover);
     transform: translateY(-2px);
 }
 
 .sound-btn-content {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.6rem;
     font-size: 0.88rem;
     font-weight: 600;
     letter-spacing: 0.2px;
     white-space: nowrap;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Active State: Morphs into a Compact Circle Visualizer */
+/* OFF STATE SHOWS BY DEFAULT */
+#sound-btn-off {
+    opacity: 1;
+    transform: scale(1);
+}
+
+#sound-btn-on {
+    opacity: 0;
+    transform: scale(0.6);
+    position: absolute;
+    pointer-events: none;
+}
+
+/* PLAYING / CLOSED CIRCLE STATE */
 .sound-toggle-btn.playing {
-    padding: 0;
     width: 48px;
-    height: 48px;
     border-radius: 50%;
+    border-color: var(--border-hover);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
 }
 
-/* Animated Equalizer Bars */
+.sound-toggle-btn.playing #sound-btn-off {
+    opacity: 0;
+    transform: scale(0.6);
+    position: absolute;
+    pointer-events: none;
+}
+
+.sound-toggle-btn.playing #sound-btn-on {
+    opacity: 1;
+    transform: scale(1);
+    position: relative;
+    pointer-events: auto;
+}
+
+/* ANIMATED EQUALIZER BARS inside Circle */
 .visualizer-bars {
     display: flex;
     align-items: flex-end;
@@ -855,7 +990,7 @@ footer {
 
 .visualizer-bars .bar {
     width: 3px;
-    background-color: #ffffff;
+    background-color: var(--text-main);
     border-radius: 3px;
     animation: equalizerBars 1.1s ease-in-out infinite alternate;
 }
