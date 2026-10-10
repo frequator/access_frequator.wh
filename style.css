@@ -14,6 +14,7 @@ body[data-theme="onyx"], :root {
     --btn-hover-text: #000000;
     --logo-filter: brightness(0) invert(1);
     --particle-rgb: 255, 255, 255;
+    --flash-rgb: 255, 255, 255;
 }
 
 body[data-theme="orange"] {
@@ -31,6 +32,7 @@ body[data-theme="orange"] {
     --btn-hover-text: #ffffff;
     --logo-filter: brightness(0) invert(1);
     --particle-rgb: 255, 85, 0;
+    --flash-rgb: 255, 120, 50;
 }
 
 body[data-theme="white"] {
@@ -48,6 +50,7 @@ body[data-theme="white"] {
     --btn-hover-text: #ffffff;
     --logo-filter: brightness(0);
     --particle-rgb: 15, 23, 42;
+    --flash-rgb: 15, 23, 42;
 }
 
 :root {
@@ -131,7 +134,7 @@ header {
     align-items: center;
     padding: 0.8rem 2.2rem;
     z-index: 1000;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     transition: var(--transition-smooth);
 }
 
@@ -259,7 +262,7 @@ nav a:hover {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: 14px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.9);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
     display: none;
     flex-direction: column;
     overflow: hidden;
@@ -523,7 +526,7 @@ nav a:hover {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     user-select: none;
     overflow: visible;
@@ -831,19 +834,6 @@ footer {
     }
 }
 
-/* Off-screen YouTube container */
-.yt-player-container {
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    width: 300px;
-    height: 200px;
-    opacity: 0.001;
-    pointer-events: none;
-    z-index: -9999;
-    overflow: hidden;
-}
-
 /* --- FLOATING THEME SELECTOR (BOTTOM-LEFT) --- */
 .theme-picker-container {
     position: fixed;
@@ -859,7 +849,7 @@ footer {
     display: flex;
     align-items: center;
     gap: 10px;
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
     transition: var(--transition-smooth);
 }
 
@@ -915,7 +905,7 @@ footer {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
     overflow: hidden;
     user-select: none;
     transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
@@ -963,7 +953,7 @@ footer {
     width: 48px;
     border-radius: 50%;
     border-color: var(--border-hover);
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 }
 
 .sound-toggle-btn.playing #sound-btn-off {
