@@ -221,10 +221,20 @@
     <!-- Hidden YouTube Audio Container (Off-Screen to allow background playback) -->
 <div id="yt-player" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; left: -9999px;"></div>
 
-    <!-- Floating Sound Button -->
-    <button id="sound-btn" class="sound-toggle-btn">
-        <svg id="icon-mute" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
-        <svg id="icon-play" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+    <!-- Floating Sound / Visualizer Toggle Button -->
+    <button id="sound-btn" class="sound-toggle-btn" aria-label="Toggle Sound">
+        <div id="sound-btn-off" class="sound-btn-content">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            <span>Enable Sound</span>
+        </div>
+        <div id="sound-btn-on" class="sound-btn-content" style="display: none;">
+            <div class="visualizer-bars">
+                <span class="bar bar-1"></span>
+                <span class="bar bar-2"></span>
+                <span class="bar bar-3"></span>
+                <span class="bar bar-4"></span>
+            </div>
+        </div>
     </button>
 
     <!-- JavaScript File Link -->
