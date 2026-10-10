@@ -960,15 +960,13 @@ footer {
     }
 }
 
-/* --- HIDDEN YOUTUBE BACKGROUND PLAYER --- */
+/* Off-screen active rendering container */
 .yt-player-container {
     position: fixed;
-    bottom: 0;
-    right: 0;
+    bottom: -500px;
+    right: -500px;
     width: 300px;
     height: 200px;
-    opacity: 0.001; /* Keeps visible to browser rendering engine without being seen */
-    pointer-events: none;
     z-index: -9999;
-    overflow: hidden;
+    pointer-events: none;
 }
