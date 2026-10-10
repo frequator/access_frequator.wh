@@ -108,7 +108,7 @@ const soundBtn = document.getElementById('sound-btn');
 const iconMute = document.getElementById('icon-mute');
 const iconPlay = document.getElementById('icon-play');
 
-// 1. Dynamically Load YouTube IFrame API Script
+// 1. Dynamically Load YouTube API
 if (!window.YT) {
     const tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
@@ -116,7 +116,6 @@ if (!window.YT) {
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 }
 
-// 2. Helper to Pick Next Random Track ID
 function getRandomTrackId() {
     if (ytPlaylist.length <= 1) return ytPlaylist[0];
     let newIndex;
@@ -128,11 +127,11 @@ function getRandomTrackId() {
     return ytPlaylist[currentTrackIndex];
 }
 
-// 3. YouTube API Initializer (Runs automatically when API loads)
+// 2. Initialize YouTube Player with domain origin
 window.onYouTubeIframeAPIReady = function() {
     player = new YT.Player('yt-player', {
-        height: '1',
-        width: '1',
+        height: '200',
+        width: '300',
         videoId: ytPlaylist[currentTrackIndex],
         playerVars: {
             'autoplay': 0,
@@ -140,7 +139,8 @@ window.onYouTubeIframeAPIReady = function() {
             'disablekb': 1,
             'fs': 0,
             'modestbranding': 1,
-            'playsinline': 1
+            'playsinline': 1,
+            'origin': window.location.origin
         },
         events: {
             'onReady': onPlayerReady,
@@ -157,7 +157,6 @@ function onPlayerReady(event) {
     }
 }
 
-// Auto-advance to next track when current song finishes
 function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.ENDED) {
         const nextTrack = getRandomTrackId();
@@ -165,15 +164,15 @@ function onPlayerStateChange(event) {
     }
 }
 
-// Skip broken/unembeddable videos automatically
-function onPlayerError() {
+function onPlayerError(event) {
+    // Skip to next track if video is unplayable or embedding is restricted
     const nextTrack = getRandomTrackId();
     if (player && player.loadVideoById) {
         player.loadVideoById(nextTrack);
     }
 }
 
-// 4. Sound Button Click Handler
+// 3. Sound Button Click Event with Unmute
 if (soundBtn) {
     soundBtn.addEventListener('click', () => {
         if (!player || typeof player.playVideo !== 'function') return;
@@ -182,6 +181,8 @@ if (soundBtn) {
             player.pauseVideo();
             isPlaying = false;
         } else {
+            player.unMute();
+            player.setVolume(100);
             player.playVideo();
             isPlaying = true;
         }
