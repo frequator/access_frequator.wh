@@ -112,7 +112,95 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', revealElements);
 }
 
-// --- 5. NEURAL NETWORK CANVAS PARTICLES ---
+// --- 5. MP3 PLAYLIST & WEB AUDIO ENGINE ---
+const mp3Playlist = [
+    "hold tight.mp3",
+    "holdup.mp3",
+    "pathfinder.mp3",
+    "takemetothemoon.mp3"
+];
+
+let currentTrackIndex = Math.floor(Math.random() * mp3Playlist.length);
+const audioEl = document.getElementById('bg-audio');
+const soundBtn = document.getElementById('sound-btn');
+
+let audioCtx = null;
+let analyser = null;
+let audioSource = null;
+let freqData = null;
+let isPlaying = false;
+let fadeInterval = null;
+
+function loadTrack(index) {
+    if (!audioEl) return;
+    audioEl.src = mp3Playlist[index];
+    audioEl.load();
+}
+
+function setupWebAudio() {
+    if (audioCtx) return;
+
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
+    
+    analyser.fftSize = 256; 
+    analyser.smoothingTimeConstant = 0.80; 
+
+    audioSource = audioCtx.createMediaElementSource(audioEl);
+    audioSource.connect(analyser);
+    analyser.connect(audioCtx.destination);
+
+    freqData = new Uint8Array(analyser.frequencyBinCount);
+}
+
+// SMOOTH AUDIO FADE IN / FADE OUT
+function fadeInAudio(audio, targetVol = 1.0, duration = 650) {
+    clearInterval(fadeInterval);
+    audio.volume = 0;
+    const stepTime = 20;
+    const steps = duration / stepTime;
+    const increment = targetVol / steps;
+
+    fadeInterval = setInterval(() => {
+        if (audio.volume + increment >= targetVol) {
+            audio.volume = targetVol;
+            clearInterval(fadeInterval);
+        } else {
+            audio.volume += increment;
+        }
+    }, stepTime);
+}
+
+function fadeOutAudio(audio, duration = 650, onComplete) {
+    clearInterval(fadeInterval);
+    const stepTime = 20;
+    const steps = duration / stepTime;
+    const decrement = audio.volume / steps;
+
+    fadeInterval = setInterval(() => {
+        if (audio.volume - decrement <= 0) {
+            audio.volume = 0;
+            audio.pause();
+            clearInterval(fadeInterval);
+            if (onComplete) onComplete();
+        } else {
+            audio.volume -= decrement;
+        }
+    }, stepTime);
+}
+
+if (audioEl) {
+    loadTrack(currentTrackIndex);
+    audioEl.addEventListener('ended', () => {
+        currentTrackIndex = (currentTrackIndex + 1) % mp3Playlist.length;
+        loadTrack(currentTrackIndex);
+        if (isPlaying) {
+            audioEl.play().then(() => fadeInAudio(audioEl, 1.0, 500));
+        }
+    });
+}
+
+// --- 6. PARTICLES & NEURAL NET CANVAS VISUALIZER ---
 const particleContainer = document.getElementById('particles-container');
 
 if (particleContainer) {
@@ -159,18 +247,36 @@ if (particleContainer) {
         });
     }
 
-    function getParticleRgb() {
-        return getComputedStyle(document.body).getPropertyValue('--particle-rgb').trim() || '255, 255, 255';
+    function getThemeVisualConfig() {
+        const bodyTheme = document.body.getAttribute('data-theme') || 'onyx';
+        const pRgb = getComputedStyle(document.body).getPropertyValue('--particle-rgb').trim() || '255, 255, 255';
+        const isLight = bodyTheme === 'white';
+
+        return { particleRgb: pRgb, isLight };
     }
 
-    function drawNeuralNetwork() {
+    function renderAudioReactiveCanvas() {
         ctx.clearRect(0, 0, width, height);
-        const rgb = getParticleRgb();
+        const { particleRgb, isLight } = getThemeVisualConfig();
 
+        let bassPower = 0;
+
+        if (isPlaying && analyser && freqData && audioEl.volume > 0.05) {
+            analyser.getByteFrequencyData(freqData);
+
+            // BASS POWER (Bins 0 & 1 drive dots & lines strictly)
+            const rawBass = (freqData[0] + freqData[1]) / 2;
+            bassPower = Math.pow(rawBass / 255, 1.4) * audioEl.volume;
+        }
+
+        // --- DOTS & LINES (BASS REACTIVE ONLY) ---
         for (let i = 0; i < particles.length; i++) {
             let p = particles[i];
-            p.x += p.vx;
-            p.y += p.vy;
+
+            // Displacement driven strictly by bass
+            const displacement = bassPower * 1.5;
+            p.x += p.vx + (Math.sin(i + performance.now() * 0.003) * displacement);
+            p.y += p.vy + (Math.cos(i + performance.now() * 0.003) * displacement);
 
             if (p.x < 0) p.x = width;
             if (p.x > width) p.x = 0;
@@ -187,11 +293,16 @@ if (particleContainer) {
                 }
             }
 
+            // Dot sizing driven strictly by bass
+            const dynamicRadius = p.radius + (bassPower * 3.5);
+            const particleAlpha = isLight ? 0.95 : (0.85 + (bassPower * 0.15));
+
             ctx.beginPath();
-            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(${rgb}, 0.85)`;
+            ctx.arc(p.x, p.y, dynamicRadius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${particleRgb}, ${particleAlpha})`;
             ctx.fill();
 
+            // Mouse lines
             if (mouseActive) {
                 const dxM = mouseX - p.x;
                 const dyM = mouseY - p.y;
@@ -201,190 +312,67 @@ if (particleContainer) {
                     ctx.beginPath();
                     ctx.moveTo(p.x, p.y);
                     ctx.lineTo(mouseX, mouseY);
-                    const opacity = (1 - distM / 220) * 0.9;
-                    ctx.strokeStyle = `rgba(${rgb}, ${opacity})`;
-                    ctx.lineWidth = 1.3;
+                    const mouseOpacity = (1 - distM / 220) * (isLight ? 0.95 : 0.85 + bassPower * 0.15);
+                    ctx.strokeStyle = `rgba(${particleRgb}, ${mouseOpacity})`;
+                    ctx.lineWidth = 1.4 + (bassPower * 0.8);
                     ctx.stroke();
                 }
             }
 
+            // Neural net lines driven strictly by bass
             for (let j = i + 1; j < particles.length; j++) {
                 let p2 = particles[j];
                 const dx = p.x - p2.x;
                 const dy = p.y - p2.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
 
-                if (dist < 120) {
+                if (dist < 125) {
                     ctx.beginPath();
                     ctx.moveTo(p.x, p.y);
                     ctx.lineTo(p2.x, p2.y);
-                    ctx.strokeStyle = `rgba(${rgb}, ${(1 - dist / 120) * 0.3})`;
-                    ctx.lineWidth = 0.6;
+                    
+                    const baseLineAlpha = isLight ? 0.50 : 0.28;
+                    const netOpacity = ((1 - dist / 125) * baseLineAlpha) + (bassPower * 0.40);
+                    
+                    ctx.strokeStyle = `rgba(${particleRgb}, ${netOpacity})`;
+                    ctx.lineWidth = (isLight ? 1.0 : 0.7) + (bassPower * 1.5);
                     ctx.stroke();
                 }
             }
         }
-        requestAnimationFrame(drawNeuralNetwork);
+
+        requestAnimationFrame(renderAudioReactiveCanvas);
     }
 
-    drawNeuralNetwork();
+    renderAudioReactiveCanvas();
 }
 
-// --- 6. CONTINUOUS YOUTUBE MUSIC PLAYER & SAFE API INITIALIZATION ---
-const ytPlaylist = ["VLUkhtUH4mA", "n0XqaQWJp1c", "qkKbn7qZSno", "HPOWu76qAAc"];
-let player;
-let isPlayerReady = false;
-let isPlaying = false;
-let pendingPlay = false;
-let currentTrackIndex = Math.floor(Math.random() * ytPlaylist.length);
-let fadeInterval = null;
-
-const soundBtn = document.getElementById('sound-btn');
-
-function getRandomTrackId() {
-    if (ytPlaylist.length <= 1) return ytPlaylist[0];
-    let newIndex;
-    do {
-        newIndex = Math.floor(Math.random() * ytPlaylist.length);
-    } while (newIndex === currentTrackIndex);
-    
-    currentTrackIndex = newIndex;
-    return ytPlaylist[currentTrackIndex];
-}
-
-// DYNAMICALLY INJECT & SAFE-LOAD YOUTUBE IFRAME API
-function initYouTubePlayer() {
-    if (window.YT && window.YT.Player) {
-        createPlayer();
-    } else {
-        if (!document.getElementById('yt-api-script')) {
-            const tag = document.createElement('script');
-            tag.id = 'yt-api-script';
-            tag.src = "https://www.youtube.com/iframe_api";
-            const firstScriptTag = document.getElementsByTagName('script')[0];
-            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        }
-        window.onYouTubeIframeAPIReady = createPlayer;
-    }
-}
-
-function createPlayer() {
-    if (player) return;
-    player = new YT.Player('yt-player', {
-        height: '200',
-        width: '300',
-        videoId: ytPlaylist[currentTrackIndex],
-        playerVars: {
-            'autoplay': 0,
-            'controls': 0,
-            'disablekb': 1,
-            'fs': 0,
-            'modestbranding': 1,
-            'playsinline': 1,
-            'enablejsapi': 1
-        },
-        events: {
-            'onReady': () => {
-                isPlayerReady = true;
-                if (pendingPlay) {
-                    pendingPlay = false;
-                    fadeInAudio(100, 700);
-                }
-            },
-            'onStateChange': onPlayerStateChange,
-            'onError': onPlayerError
-        }
-    });
-}
-
-function fadeInAudio(targetVol = 100, duration = 700) {
-    if (!player || typeof player.setVolume !== 'function') return;
-    clearInterval(fadeInterval);
-    
-    player.unMute();
-    player.setVolume(0);
-    player.playVideo();
-
-    let currentVol = 0;
-    const stepTime = 30;
-    const steps = duration / stepTime;
-    const increment = targetVol / steps;
-
-    fadeInterval = setInterval(() => {
-        currentVol += increment;
-        if (currentVol >= targetVol) {
-            player.setVolume(targetVol);
-            clearInterval(fadeInterval);
-        } else {
-            player.setVolume(Math.round(currentVol));
-        }
-    }, stepTime);
-}
-
-function fadeOutAudio(duration = 700) {
-    if (!player || typeof player.setVolume !== 'function') return;
-    clearInterval(fadeInterval);
-
-    let currentVol = player.getVolume ? player.getVolume() : 100;
-    const stepTime = 30;
-    const steps = duration / stepTime;
-    const decrement = currentVol / steps;
-
-    fadeInterval = setInterval(() => {
-        currentVol -= decrement;
-        if (currentVol <= 0) {
-            player.setVolume(0);
-            player.pauseVideo();
-            clearInterval(fadeInterval);
-        } else {
-            player.setVolume(Math.round(currentVol));
-        }
-    }, stepTime);
-}
-
-function onPlayerStateChange(event) {
-    if (event.data === YT.PlayerState.ENDED) {
-        const nextTrack = getRandomTrackId();
-        player.loadVideoById(nextTrack);
-    }
-}
-
-function onPlayerError() {
-    const nextTrack = getRandomTrackId();
-    if (player && player.loadVideoById) {
-        player.loadVideoById(nextTrack);
-    }
-}
-
-// TOGGLE SOUND & TRIGGER MORPH ANIMATION
-if (soundBtn) {
+// --- 7. MORPHING SOUND BUTTON CONTROLLER ---
+if (soundBtn && audioEl) {
     soundBtn.addEventListener('click', (e) => {
         e.stopPropagation();
 
-        if (isPlaying) {
-            isPlaying = false;
-            pendingPlay = false;
-            fadeOutAudio(500);
-        } else {
-            isPlaying = true;
-            if (isPlayerReady && player && typeof player.playVideo === 'function') {
-                fadeInAudio(100, 700);
-            } else {
-                pendingPlay = true;
-            }
+        setupWebAudio();
+
+        if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume();
         }
 
-        updateSoundUI(isPlaying);
+        if (isPlaying) {
+            fadeOutAudio(audioEl, 650, () => {
+                isPlaying = false;
+                soundBtn.classList.remove('playing');
+            });
+        } else {
+            isPlaying = true;
+            soundBtn.classList.add('playing');
+            audioEl.play().then(() => {
+                fadeInAudio(audioEl, 1.0, 650);
+            }).catch(err => {
+                console.error("Audio playback error:", err);
+                isPlaying = false;
+                soundBtn.classList.remove('playing');
+            });
+        }
     });
 }
-
-function updateSoundUI(playing) {
-    if (playing) {
-        if (soundBtn) soundBtn.classList.add('playing');
-    } else {
-        if (soundBtn) soundBtn.classList.remove('playing');
-    }
-}
-
-// INITIALIZE PLAYER ON SCRIPT LOAD
-initYouTubePlayer();
