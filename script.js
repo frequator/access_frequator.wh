@@ -75,7 +75,7 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// --- 4. SCROLL REVEAL OBSERVER ---
+// --- 4. SCROLL REVEAL OBSERVER (IMMEDIATE ATTACHMENT) ---
 const observerOptions = { threshold: 0.05 };
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -85,9 +85,15 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
-document.addEventListener('DOMContentLoaded', () => {
+function revealElements() {
     document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
-});
+}
+
+// Run immediately and as a DOM fallback
+revealElements();
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', revealElements);
+}
 
 // --- 5. NEURAL NETWORK CANVAS PARTICLES ---
 const particleContainer = document.getElementById('particles-container');
@@ -202,7 +208,7 @@ if (particleContainer) {
     drawNeuralNetwork();
 }
 
-// --- 6. CONTINUOUS YOUTUBE MUSIC PLAYER WITH VOLUME FADE ---
+// --- 6. YOUTUBE MUSIC PLAYER WITH VOLUME FADE ---
 const ytPlaylist = ["VLUkhtUH4mA", "n0XqaQWJp1c", "qkKbn7qZSno", "HPOWu76qAAc"];
 let player;
 let isPlayerReady = false;
@@ -327,9 +333,4 @@ function updateSoundUI(playing) {
         if (soundBtnOff) soundBtnOff.style.display = 'none';
         if (soundBtnOn) soundBtnOn.style.display = 'flex';
         if (soundBtn) soundBtn.classList.add('playing');
-    } else {
-        if (soundBtnOff) soundBtnOff.style.display = 'flex';
-        if (soundBtnOn) soundBtnOn.style.display = 'none';
-        if (soundBtn) soundBtn.classList.remove('playing');
     }
-}
