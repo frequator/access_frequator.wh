@@ -11,6 +11,7 @@
     <script src="https://www.youtube.com/iframe_api"></script>
     <link rel="stylesheet" href="style.css">
 </head>
+<body>
 
     <!-- Floating Dust Particles -->
     <div id="particles-container"></div>
@@ -87,7 +88,7 @@
             </div>
         </section>
 
-       <!-- Futuristic Dark Explorer Section -->
+        <!-- Futuristic Dark Explorer Section -->
         <section id="explorer" class="explorer-dark-section reveal-on-scroll">
             <div class="explorer-header">
                 <h2>Connect With Elite Music Curators and Global Media Networks.</h2>
@@ -109,7 +110,7 @@
                 </div>
             </div>
 
-            <!-- JOIN OUR TEAM BUTTON WITH WHOP LOGO & BLACK-TO-LIGHT HOVER -->
+            <!-- JOIN OUR TEAM BUTTON -->
             <div class="team-join-container">
                 <button class="btn-invert-hover" onclick="triggerMusicExplosion(event); setTimeout(() => window.open('https://whop.com/frequator/music-video-clipping-c4a4?a=ianuozoia', '_blank'), 400);">
                     <span class="btn-text-content">
@@ -218,8 +219,10 @@
         </div>
     </footer>
 
-    <!-- Hidden YouTube Audio Container (Off-Screen to allow background playback) -->
-<div id="yt-player" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; left: -9999px;"></div>
+    <!-- Off-Screen Active Rendering Container for YouTube Player -->
+    <div class="yt-player-container">
+        <div id="yt-player"></div>
+    </div>
 
     <!-- Floating Sound / Visualizer Toggle Button -->
     <button id="sound-btn" class="sound-toggle-btn" aria-label="Toggle Sound">
