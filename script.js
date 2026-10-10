@@ -108,6 +108,15 @@ const soundBtn = document.getElementById('sound-btn');
 const iconMute = document.getElementById('icon-mute');
 const iconPlay = document.getElementById('icon-play');
 
+// 1. Dynamically Load YouTube IFrame API Script
+if (!window.YT) {
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+}
+
+// 2. Helper to Pick Next Random Track ID
 function getRandomTrackId() {
     if (ytPlaylist.length <= 1) return ytPlaylist[0];
     let newIndex;
@@ -119,39 +128,19 @@ function getRandomTrackId() {
     return ytPlaylist[currentTrackIndex];
 }
 
-function playNextRandom() {
-    if (!player || typeof player.loadVideoById !== 'function') return;
-    const nextId = getRandomTrackId();
-    player.loadVideoById(nextId);
-    player.playVideo();
-
-    if (isPlaying) {
-        player.unMute();
-        player.setVolume(100);
-    }
-}
-
-var tag = document.createElement('script');
-tag.src = "https://www.youtube.com/iframe_api";
-var firstScriptTag = document.getElementsByTagName('script')[0];
-if (firstScriptTag && firstScriptTag.parentNode) {
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-}
-
+// 3. YouTube API Initializer (Runs automatically when API loads)
 window.onYouTubeIframeAPIReady = function() {
-    const startId = ytPlaylist[currentTrackIndex];
     player = new YT.Player('yt-player', {
-        height: '0',
-        width: '0',
-        videoId: startId,
+        height: '1',
+        width: '1',
+        videoId: ytPlaylist[currentTrackIndex],
         playerVars: {
-            'autoplay': 1,
+            'autoplay': 0,
             'controls': 0,
             'disablekb': 1,
             'fs': 0,
-            'rel': 0,
-            'loop': 0,
-            'enablejsapi': 1
+            'modestbranding': 1,
+            'playsinline': 1
         },
         events: {
             'onReady': onPlayerReady,
@@ -162,67 +151,56 @@ window.onYouTubeIframeAPIReady = function() {
 };
 
 function onPlayerReady(event) {
-    event.target.playVideo();
-
+    updateButtonUI(isPlaying);
     if (isPlaying) {
-        player.unMute();
-        player.setVolume(100);
-        if (iconMute) iconMute.style.display = 'none';
-        if (iconPlay) iconPlay.style.display = 'block';
-        if (soundBtn) soundBtn.classList.add('is-playing');
-    } else {
-        player.mute();
-        const unlockAudio = () => {
-            if (player && typeof player.unMute === 'function') {
-                player.unMute();
-                player.setVolume(100);
-                if (iconMute) iconMute.style.display = 'none';
-                if (iconPlay) iconPlay.style.display = 'block';
-                if (soundBtn) soundBtn.classList.add('is-playing');
-                isPlaying = true;
-                localStorage.setItem('frequator_sound', 'true');
-            }
-            window.removeEventListener('click', unlockAudio);
-            window.removeEventListener('keydown', unlockAudio);
-            window.removeEventListener('scroll', unlockAudio);
-        };
-        window.addEventListener('click', unlockAudio);
-        window.addEventListener('keydown', unlockAudio);
-        window.addEventListener('scroll', unlockAudio);
+        event.target.playVideo();
     }
 }
 
+// Auto-advance to next track when current song finishes
+function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.ENDED) {
+        const nextTrack = getRandomTrackId();
+        player.loadVideoById(nextTrack);
+    }
+}
+
+// Skip broken/unembeddable videos automatically
+function onPlayerError() {
+    const nextTrack = getRandomTrackId();
+    if (player && player.loadVideoById) {
+        player.loadVideoById(nextTrack);
+    }
+}
+
+// 4. Sound Button Click Handler
 if (soundBtn) {
     soundBtn.addEventListener('click', () => {
-        if (!player || typeof player.getPlayerState !== 'function') return;
+        if (!player || typeof player.playVideo !== 'function') return;
 
         if (isPlaying) {
-            player.mute();
-            if (iconMute) iconMute.style.display = 'block';
-            if (iconPlay) iconPlay.style.display = 'none';
-            soundBtn.classList.remove('is-playing');
+            player.pauseVideo();
             isPlaying = false;
-            localStorage.setItem('frequator_sound', 'false');
         } else {
-            player.unMute();
-            player.setVolume(100);
-            if (iconMute) iconMute.style.display = 'none';
-            if (iconPlay) iconPlay.style.display = 'block';
-            soundBtn.classList.add('is-playing');
+            player.playVideo();
             isPlaying = true;
-            localStorage.setItem('frequator_sound', 'true');
         }
+        
+        localStorage.setItem('frequator_sound', isPlaying);
+        updateButtonUI(isPlaying);
     });
 }
 
-function onPlayerStateChange(event) {
-    if (event.data === 0) {
-        setTimeout(playNextRandom, 100);
+function updateButtonUI(playing) {
+    if (playing) {
+        if (iconMute) iconMute.style.display = 'none';
+        if (iconPlay) iconPlay.style.display = 'block';
+        if (soundBtn) soundBtn.classList.add('playing');
+    } else {
+        if (iconMute) iconMute.style.display = 'block';
+        if (iconPlay) iconPlay.style.display = 'none';
+        if (soundBtn) soundBtn.classList.remove('playing');
     }
-}
-
-function onPlayerError(event) {
-    setTimeout(playNextRandom, 100);
 }
 
 // --- NEURAL NETWORK BRAINWORK CANVAS PARTICLE SYSTEM ---
