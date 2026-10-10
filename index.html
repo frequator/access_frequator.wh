@@ -216,8 +216,8 @@
         </div>
     </footer>
 
-    <!-- Hidden YouTube Audio Player -->
-    <div id="yt-player" style="display: none;"></div>
+    <!-- Hidden YouTube Audio Container (Off-Screen to allow background playback) -->
+<div id="yt-player" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; left: -9999px;"></div>
 
     <!-- Floating Sound Button -->
     <button id="sound-btn" class="sound-toggle-btn">
