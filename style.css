@@ -36,6 +36,40 @@ body {
     to { opacity: 1; }
 }
 
+/* --- LOADING SCREEN OVERLAY --- */
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000000;
+    z-index: 99999;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 7rem;
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#loading-overlay.fade-out {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loading-spinner {
+    width: 44px;
+    height: 44px;
+    border: 3px solid rgba(255, 255, 255, 0.12);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: spinLoader 0.7s linear infinite;
+}
+
+@keyframes spinLoader {
+    to { transform: rotate(360deg); }
+}
+
 /* --- RECURRING SCROLL REVEAL TRANSITIONS --- */
 .reveal-on-scroll {
     opacity: 0;
@@ -66,15 +100,8 @@ body {
     background: #ffffff;
     border-radius: 50%;
     pointer-events: none;
-    opacity: 0;
-    animation: drift-up linear infinite;
-}
-
-@keyframes drift-up {
-    0% { transform: translateY(105vh) scale(0.2); opacity: 0; }
-    20% { opacity: 0.5; }
-    80% { opacity: 0.5; }
-    100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+    opacity: 0.5;
+    will-change: transform;
 }
 
 /* --- HEADER NAVIGATION --- */
@@ -182,23 +209,6 @@ nav a:hover {
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
 }
 
-.btn-solid {
-    background: var(--text-main);
-    color: var(--bg-base);
-    border: none;
-    padding: 1rem 2.5rem;
-    border-radius: 50px;
-    font-weight: 700;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: var(--transition-smooth);
-}
-
-.btn-solid:hover {
-    opacity: 0.88;
-    box-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
-}
-
 /* 3-LINE HAMBURGER MENU DROPDOWN */
 .menu-container {
     position: relative;
@@ -285,17 +295,24 @@ nav a:hover {
     margin: 4px 0;
 }
 
-/* --- HERO SECTION WITH ORGANIZED 2-COLUMN SIDE-BY-SIDE GRID --- */
+/* --- CENTERED HERO SECTION (7clouds Style) --- */
 .hero-futuristic {
-    padding: 11rem 5% 5rem;
-    max-width: 1440px;
+    padding: 13rem 5% 6rem;
+    max-width: 900px;
     margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 1.35fr;
-    gap: 4rem;
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    text-align: center;
     position: relative;
     z-index: 2;
+}
+
+.hero-content {
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .hero-content h1 {
@@ -311,119 +328,17 @@ nav a:hover {
     color: var(--text-muted);
     font-size: 1.15rem;
     margin-bottom: 2.2rem;
-    max-width: 540px;
+    max-width: 700px;
     line-height: 1.7;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.hero-visual-wrapper {
-    position: relative;
+.hero-cta-center {
     display: flex;
     justify-content: center;
-    align-items: center;
-}
-
-.hero-glow-backdrop {
-    position: absolute;
     width: 100%;
-    height: 100%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
-    border-radius: 50%;
-    z-index: 1;
-}
-
-/* ORGANIZED 2-COLUMN SIDE-BY-SIDE GRID WITH WIDE SPACING */
-.showcase-cards-container {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2.2rem; /* Huge organized gap */
-}
-
-.showcase-pair-card {
-    position: relative;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    overflow: visible; /* Allows circle profile avatar to overflow crisply */
-    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.85);
-    transition: var(--transition-smooth);
-}
-
-.showcase-pair-card:hover {
-    border-color: rgba(255, 255, 255, 0.45);
-    transform: translateY(-6px);
-    box-shadow: 0 25px 55px rgba(0, 0, 0, 0.95);
-}
-
-.showcase-banner-wrapper {
-    position: relative;
-    width: 100%;
-    height: 210px;
-    border-radius: 20px 20px 0 0;
-    overflow: hidden;
-}
-
-.showcase-banner-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    image-rendering: -webkit-optimize-contrast; /* Ultra crisp 4K rendering */
-    transition: var(--transition-slower);
-}
-
-.showcase-pair-card:hover .showcase-banner-img {
-    transform: scale(1.05);
-}
-
-/* HIGHLY VISIBLE PROMINENT CIRCLE ARTIST PROFILE */
-.circle-artist-avatar {
-    position: absolute;
-    bottom: -36px;
-    left: 20px;
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    border: 3px solid #ffffff; /* Crisp white outline for maximum contrast */
-    background: #000000;
-    overflow: hidden;
-    z-index: 5;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.95);
-    transition: var(--transition-smooth);
-}
-
-.showcase-pair-card:hover .circle-artist-avatar {
-    transform: scale(1.08);
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
-}
-
-.circle-artist-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    image-rendering: -webkit-optimize-contrast;
-}
-
-.showcase-card-info {
-    padding: 3rem 1.5rem 1.5rem; /* Space reserved for the circle avatar */
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.showcase-card-info h3 {
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: #ffffff;
-    letter-spacing: -0.3px;
-}
-
-.showcase-card-info p {
-    font-size: 0.85rem;
-    color: var(--text-muted);
+    margin-top: 1rem;
 }
 
 /* --- WHOP PARTNER BAR --- */
@@ -514,7 +429,6 @@ nav a:hover {
     color: #000000;
 }
 
-/* BE PART OF OUR TEAM BUTTON - INVERTED HOVER EFFECT */
 .team-join-container {
     display: flex;
     justify-content: center;
@@ -523,11 +437,12 @@ nav a:hover {
     position: relative;
 }
 
-.btn-join-team {
+/* UNIFIED INVERTED HOVER BUTTON STYLE */
+.btn-invert-hover {
     position: relative;
-    background: #000000; /* Shape background starts black */
+    background: #000000;
     color: #ffffff;
-    border: 1.5px solid #ffffff; /* White border remains constant */
+    border: 1.5px solid #ffffff;
     padding: 1.25rem 3rem;
     border-radius: 50px;
     font-size: 1.15rem;
@@ -545,66 +460,40 @@ nav a:hover {
     z-index: 10;
 }
 
-.btn-join-team .btn-text-content {
+.btn-invert-hover .btn-text-content {
     position: relative;
     z-index: 2;
     display: inline-flex;
     align-items: center;
     gap: 14px;
-    color: #ffffff; /* Text starts white */
+    color: #ffffff;
     transition: color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Whop Logo starts white */
 .btn-whop-logo {
     height: 24px;
     width: auto;
-    filter: brightness(0) invert(1); /* Pure white logo by default */
+    filter: brightness(0) invert(1);
     transition: filter 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s ease;
 }
 
-/* HOVER STATE: Shape fills white, text turns black, logo turns black */
-.btn-join-team:hover {
-    background: #ffffff; /* Shape background fills white */
+.btn-invert-hover:hover {
+    background: #ffffff;
     border-color: #ffffff;
     transform: translateY(-4px) scale(1.02);
     box-shadow: 0 0 35px rgba(255, 255, 255, 0.3), 0 15px 40px rgba(0, 0, 0, 0.9);
 }
 
-.btn-join-team:hover .btn-text-content {
-    color: #000000; /* Text turns black on hover */
+.btn-invert-hover:hover .btn-text-content {
+    color: #000000;
 }
 
-.btn-join-team:hover .btn-whop-logo {
-    filter: brightness(0); /* Logo turns black on hover */
+.btn-invert-hover:hover .btn-whop-logo {
+    filter: brightness(0);
     transform: scale(1.05);
 }
 
-/* MONOCHROME PARTICLES BEHIND BUTTON */
-.exploding-tune-icon {
-    position: absolute;
-    pointer-events: none;
-    z-index: 1;
-    font-size: 0.95rem;
-    color: #ffffff;
-    fill: #ffffff;
-    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.8));
-    animation: explodeTune 0.8s cubic-bezier(0.12, 0.8, 0.3, 1) forwards;
-    transform: translate(-50%, -50%);
-}
-
-@keyframes explodeTune {
-    0% {
-        opacity: 0.9;
-        transform: translate(-50%, -50%) scale(0.4) rotate(0deg);
-    }
-    100% {
-        opacity: 0;
-        transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.1) rotate(var(--rot));
-    }
-}
-
-/* MINIMIZED MONOCHROME BLACK & WHITE PARTICLES (BEHIND TEXT) */
+/* MONOCHROME PARTICLES */
 .exploding-tune-icon {
     position: absolute;
     pointer-events: none;
@@ -821,7 +710,6 @@ footer {
 }
 
 /* MASSIVE FREQUATOR BRANDING DISPLAY */
-/* MASSIVE FREQUATOR TEXT - NATURAL PROPORTIONS, THIN OUTLINE TO SOLID HOVER */
 .giant-footer-branding {
     width: 100%;
     max-width: 1280px;
@@ -836,8 +724,8 @@ footer {
     letter-spacing: -0.02em;
     line-height: 0.9;
     text-transform: uppercase;
-    color: transparent; /* Hollow inside */
-    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.32); /* Thin, sharp outline border */
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.32);
     display: block;
     width: 100%;
     text-align: center;
@@ -847,14 +735,13 @@ footer {
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Turns solid white when mouse moves over it */
 .giant-footer-branding:hover .giant-footer-text,
 .giant-footer-text:hover {
     color: #ffffff;
     -webkit-text-stroke: 1px #ffffff;
 }
 
-/* UNDERLINE DIVIDER BAR MATCHING CONTAINER EDGE EXACTLY */
+/* UNDERLINE DIVIDER BAR */
 .footer-bottom-bar {
     display: flex;
     justify-content: space-between;
@@ -883,17 +770,6 @@ footer {
 }
 
 @media (max-width: 1024px) {
-    .hero-futuristic {
-        grid-template-columns: 1fr;
-        padding-top: 8rem;
-        text-align: center;
-    }
-    .hero-content p {
-        margin: 0 auto 2.2rem;
-    }
-    .showcase-cards-container {
-        grid-template-columns: 1fr; /* Stack vertically on smaller tablet/mobile screens */
-    }
     .footer-grid-clean {
         grid-template-columns: 1fr 1fr;
     }
@@ -904,81 +780,182 @@ footer {
     }
 }
 
-/* UNIFIED INVERTED HOVER BUTTON STYLE (BLACK START ➔ WHITE HOVER) */
-.btn-invert-hover {
-    position: relative;
-    background: #000000;
-    color: #ffffff;
-    border: 1.5px solid #ffffff;
-    padding: 1.25rem 3rem;
-    border-radius: 50px;
-    font-size: 1.15rem;
-    font-weight: 800;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    user-select: none;
-    overflow: visible;
-    z-index: 10;
-}
-
-.btn-invert-hover .btn-text-content {
-    position: relative;
-    z-index: 2;
-    display: inline-flex;
-    align-items: center;
-    gap: 14px;
-    color: #ffffff;
-    transition: color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.btn-whop-logo {
-    height: 24px;
-    width: auto;
-    filter: brightness(0) invert(1);
-    transition: filter 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s ease;
-}
-
-.btn-invert-hover:hover {
-    background: #ffffff;
-    border-color: #ffffff;
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 0 35px rgba(255, 255, 255, 0.3), 0 15px 40px rgba(0, 0, 0, 0.9);
-}
-
-.btn-invert-hover:hover .btn-text-content {
-    color: #000000;
-}
-
-.btn-invert-hover:hover .btn-whop-logo {
-    filter: brightness(0);
-    transform: scale(1.05);
-}
-
-.exploding-tune-icon {
-    position: absolute;
+#particles-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     pointer-events: none;
     z-index: 1;
-    font-size: 0.95rem;
-    color: #ffffff;
-    fill: #ffffff;
-    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.8));
-    animation: explodeTune 0.8s cubic-bezier(0.12, 0.8, 0.3, 1) forwards;
-    transform: translate(-50%, -50%);
+    overflow: hidden;
 }
 
-@keyframes explodeTune {
-    0% {
-        opacity: 0.9;
-        transform: translate(-50%, -50%) scale(0.4) rotate(0deg);
+#particles-container canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.hero-content p {
+    text-align: justify;
+    text-justify: inter-word;
+    max-width: 540px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 2.2rem;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+.genre-tag {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 0.6rem 1.4rem;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: default; /* Shows regular cursor instead of click hand */
+    transition: var(--transition-smooth);
+}
+
+.genre-tag:hover {
+    background: #ffffff;
+    border-color: #ffffff;
+    color: #000000;
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+.curators-showcase {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.2rem;
+    margin-top: 2.2rem;
+    flex-wrap: wrap;
+}
+
+.curator-badge-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(17, 17, 17, 0.85);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 1.4rem 0.5rem 0.5rem;
+    border-radius: 50px;
+    backdrop-filter: blur(12px);
+    transition: var(--transition-smooth);
+}
+
+.curator-badge-wrapper:hover {
+    border-color: #ffffff;
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.25);
+    transform: translateY(-3px);
+}
+
+.curator-avatar-ring {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #000000;
+    border: 1.5px solid #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.curator-logo-img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+
+.curator-info {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.curator-name {
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: #ffffff;
+    letter-spacing: -0.2px;
+}
+
+.curator-role {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 600;
+}
+
+.curator-stack-preview {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px dashed var(--border-color);
+    padding: 0.75rem 1.4rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.curator-badge-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(17, 17, 17, 0.85);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 1.4rem 0.5rem 0.5rem;
+    border-radius: 50px;
+    backdrop-filter: blur(12px);
+    text-decoration: none; /* Removes any default link underline */
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+
+/* --- FOOTER LAYOUT FIX --- */
+.footer-grid-clean {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    max-width: 1250px !important;
+    margin: 3rem auto !important;
+    padding: 0 2rem !important;
+    width: 100% !important;
+}
+
+/* Grouped 4 Nav Columns Tightly together */
+.footer-nav-group {
+    display: flex !important;
+    gap: 3.5rem !important; /* Adjust this value if you want the 4 columns closer or further apart */
+}
+
+.footer-nav-group .footer-col {
+    display: flex;
+    flex-direction: column;
+    min-width: 110px;
+}
+
+/* Mobile responsive fallback */
+@media (max-width: 900px) {
+    .footer-grid-clean {
+        flex-direction: column !important;
+        gap: 2.5rem !important;
     }
-    100% {
-        opacity: 0;
-        transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.1) rotate(var(--rot));
+    .footer-nav-group {
+        flex-wrap: wrap !important;
+        gap: 2rem !important;
     }
 }
