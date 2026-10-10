@@ -9,6 +9,7 @@ window.addEventListener('load', () => {
     }
 });
 
+// --- MUSIC EXPLOSION BUTTON EFFECT ---
 function triggerMusicExplosion(e) {
     const btn = e.currentTarget;
     const rect = btn.getBoundingClientRect();
@@ -55,7 +56,7 @@ window.addEventListener('click', () => {
     if (dropdown) dropdown.classList.remove('show');
 });
 
-// --- HEADER SCROLL COLLAPSE & TYPEWRITER EXPANSION ---
+// --- HEADER SCROLL COLLAPSE & TYPEWRITER ---
 const header = document.getElementById('main-header');
 const brandTypewriter = document.getElementById('brand-typewriter');
 const fullBrandText = "Frequator";
@@ -98,117 +99,10 @@ const observer = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
 
-// --- CONTINUOUS RANDOM YOUTUBE MUSIC PLAYER ---
-const ytPlaylist = ["VLUkhtUH4mA", "n0XqaQWJp1c", "qkKbn7qZSno", "HPOWu76qAAc"];
-let player;
-let currentTrackIndex = Math.floor(Math.random() * ytPlaylist.length);
-let isPlaying = localStorage.getItem('frequator_sound') === 'true';
-
-const soundBtn = document.getElementById('sound-btn');
-const iconMute = document.getElementById('icon-mute');
-const iconPlay = document.getElementById('icon-play');
-
-// 1. Dynamically Load YouTube API
-if (!window.YT) {
-    const tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    const firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-}
-
-function getRandomTrackId() {
-    if (ytPlaylist.length <= 1) return ytPlaylist[0];
-    let newIndex;
-    do {
-        newIndex = Math.floor(Math.random() * ytPlaylist.length);
-    } while (newIndex === currentTrackIndex);
-    
-    currentTrackIndex = newIndex;
-    return ytPlaylist[currentTrackIndex];
-}
-
-// 2. Initialize YouTube Player with domain origin
-window.onYouTubeIframeAPIReady = function() {
-    player = new YT.Player('yt-player', {
-        height: '200',
-        width: '300',
-        videoId: ytPlaylist[currentTrackIndex],
-        playerVars: {
-            'autoplay': 0,
-            'controls': 0,
-            'disablekb': 1,
-            'fs': 0,
-            'modestbranding': 1,
-            'playsinline': 1,
-            'origin': window.location.origin
-        },
-        events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange,
-            'onError': onPlayerError
-        }
-    });
-};
-
-function onPlayerReady(event) {
-    updateButtonUI(isPlaying);
-    if (isPlaying) {
-        event.target.playVideo();
-    }
-}
-
-function onPlayerStateChange(event) {
-    if (event.data === YT.PlayerState.ENDED) {
-        const nextTrack = getRandomTrackId();
-        player.loadVideoById(nextTrack);
-    }
-}
-
-function onPlayerError(event) {
-    // Skip to next track if video is unplayable or embedding is restricted
-    const nextTrack = getRandomTrackId();
-    if (player && player.loadVideoById) {
-        player.loadVideoById(nextTrack);
-    }
-}
-
-// 3. Sound Button Click Event with Unmute
-if (soundBtn) {
-    soundBtn.addEventListener('click', () => {
-        if (!player || typeof player.playVideo !== 'function') return;
-
-        if (isPlaying) {
-            player.pauseVideo();
-            isPlaying = false;
-        } else {
-            player.unMute();
-            player.setVolume(100);
-            player.playVideo();
-            isPlaying = true;
-        }
-        
-        localStorage.setItem('frequator_sound', isPlaying);
-        updateButtonUI(isPlaying);
-    });
-}
-
-function updateButtonUI(playing) {
-    if (playing) {
-        if (iconMute) iconMute.style.display = 'none';
-        if (iconPlay) iconPlay.style.display = 'block';
-        if (soundBtn) soundBtn.classList.add('playing');
-    } else {
-        if (iconMute) iconMute.style.display = 'block';
-        if (iconPlay) iconPlay.style.display = 'none';
-        if (soundBtn) soundBtn.classList.remove('playing');
-    }
-}
-
 // --- NEURAL NETWORK BRAINWORK CANVAS PARTICLE SYSTEM ---
 const particleContainer = document.getElementById('particles-container');
 
 if (particleContainer) {
-    // Clear out any old elements inside the container first
     particleContainer.innerHTML = '';
 
     const canvas = document.createElement('canvas');
@@ -255,19 +149,16 @@ if (particleContainer) {
     function drawNeuralNetwork() {
         ctx.clearRect(0, 0, width, height);
 
-        // Update and draw particles
         for (let i = 0; i < particles.length; i++) {
             let p = particles[i];
             p.x += p.vx;
             p.y += p.vy;
 
-            // Screen wrapping
             if (p.x < 0) p.x = width;
             if (p.x > width) p.x = 0;
             if (p.y < 0) p.y = height;
             if (p.y > height) p.y = 0;
 
-            // Gentle mouse gravity / pull effect
             if (mouseActive) {
                 const dxM = mouseX - p.x;
                 const dyM = mouseY - p.y;
@@ -278,13 +169,11 @@ if (particleContainer) {
                 }
             }
 
-            // Draw particle dot
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
             ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
             ctx.fill();
 
-            // --- DNA / NEURAL BRAINWORK LINES TO THE MOUSE ---
             if (mouseActive) {
                 const dxM = mouseX - p.x;
                 const dyM = mouseY - p.y;
@@ -301,7 +190,6 @@ if (particleContainer) {
                 }
             }
 
-            // --- CONSTELLATION LINES BETWEEN PARTICLES ---
             for (let j = i + 1; j < particles.length; j++) {
                 let p2 = particles[j];
                 const dx = p.x - p2.x;
@@ -322,4 +210,104 @@ if (particleContainer) {
     }
 
     drawNeuralNetwork();
+}
+
+// --- CONTINUOUS RANDOM YOUTUBE MUSIC PLAYER ---
+const ytPlaylist = ["VLUkhtUH4mA", "n0XqaQWJp1c", "qkKbn7qZSno", "HPOWu76qAAc"];
+let player;
+let isPlayerReady = false;
+let currentTrackIndex = Math.floor(Math.random() * ytPlaylist.length);
+let isPlaying = localStorage.getItem('frequator_sound') === 'true';
+
+const soundBtn = document.getElementById('sound-btn');
+const iconMute = document.getElementById('icon-mute');
+const iconPlay = document.getElementById('icon-play');
+
+function getRandomTrackId() {
+    if (ytPlaylist.length <= 1) return ytPlaylist[0];
+    let newIndex;
+    do {
+        newIndex = Math.floor(Math.random() * ytPlaylist.length);
+    } while (newIndex === currentTrackIndex);
+    
+    currentTrackIndex = newIndex;
+    return ytPlaylist[currentTrackIndex];
+}
+
+// Global API Callback triggered by YouTube API in head
+window.onYouTubeIframeAPIReady = function() {
+    player = new YT.Player('yt-player', {
+        height: '200',
+        width: '300',
+        videoId: ytPlaylist[currentTrackIndex],
+        playerVars: {
+            'autoplay': 0,
+            'controls': 0,
+            'disablekb': 1,
+            'fs': 0,
+            'modestbranding': 1,
+            'playsinline': 1
+        },
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange,
+            'onError': onPlayerError
+        }
+    });
+};
+
+function onPlayerReady(event) {
+    isPlayerReady = true;
+    updateButtonUI(isPlaying);
+    if (isPlaying) {
+        event.target.unMute();
+        event.target.setVolume(100);
+        event.target.playVideo();
+    }
+}
+
+function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.ENDED) {
+        const nextTrack = getRandomTrackId();
+        player.loadVideoById(nextTrack);
+    }
+}
+
+function onPlayerError(event) {
+    const nextTrack = getRandomTrackId();
+    if (player && player.loadVideoById) {
+        player.loadVideoById(nextTrack);
+    }
+}
+
+// Sound Button Toggle
+if (soundBtn) {
+    soundBtn.addEventListener('click', () => {
+        if (!isPlayerReady || !player) return;
+
+        if (isPlaying) {
+            player.pauseVideo();
+            isPlaying = false;
+        } else {
+            player.unMute();
+            player.setVolume(100);
+            player.playVideo();
+            isPlaying = true;
+        }
+        
+        localStorage.setItem('frequator_sound', isPlaying);
+        updateButtonUI(isPlaying);
+    });
+}
+
+function updateButtonUI(playing) {
+    if (playing) {
+        if (iconMute) iconMute.style.display = 'none';
+        if (iconPlay) iconPlay.style.display = 'block';
+        if (soundBtn) soundBtn.classList.add('playing');
+    } else {
+        if (iconMute) iconMute.style.display = 'block';
+        if (iconPlay) iconPlay.style.display = 'none';
+        if (soundBtn) soundBtn.classList.remove('playing');
+    }
 }
