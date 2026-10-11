@@ -65,21 +65,21 @@ window.addEventListener('click', () => {
 });
 
 // --- 3. HEADER SCROLL COLLAPSE & TYPEWRITER ---
-const header = document.getElementById('main-header');
-const brandTypewriter = document.getElementById('brand-typewriter');
-const fullBrandText = "Frequator";
 let isScrolled = false;
 let typeTimeout;
 
-function typeText(text, index = 0) {
+function typeText(brandTypewriter, text, index = 0) {
     if (brandTypewriter && index <= text.length) {
         brandTypewriter.textContent = text.substring(0, index);
-        typeTimeout = setTimeout(() => typeText(text, index + 1), 45);
+        typeTimeout = setTimeout(() => typeText(brandTypewriter, text, index + 1), 45);
     }
 }
 
 window.addEventListener('scroll', () => {
+    const header = document.getElementById('main-header');
+    const brandTypewriter = document.getElementById('brand-typewriter');
     if (!header) return;
+
     if (window.scrollY > 40 && !isScrolled) {
         isScrolled = true;
         header.classList.add('scrolled');
@@ -89,27 +89,31 @@ window.addEventListener('scroll', () => {
         header.classList.remove('scrolled');
         clearTimeout(typeTimeout);
         if (brandTypewriter) brandTypewriter.textContent = "";
-        typeText(fullBrandText, 0);
+        typeText(brandTypewriter, "Frequator", 0);
     }
 });
 
-// --- 4. SCROLL REVEAL OBSERVER ---
-const observerOptions = { threshold: 0.05 };
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-        }
-    });
-}, observerOptions);
+// --- 4. CONTINUOUS SCROLL REVEAL OBSERVER ---
+function initScrollReveal() {
+    const observerOptions = { threshold: 0.1 };
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+            } else {
+                // Removes class when element leaves viewport so it re-animates on every scroll
+                entry.target.classList.remove('is-visible');
+            }
+        });
+    }, observerOptions);
 
-function revealElements() {
     document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
 }
 
-revealElements();
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', revealElements);
+    document.addEventListener('DOMContentLoaded', initScrollReveal);
+} else {
+    initScrollReveal();
 }
 
 // --- 5. MP3 PLAYLIST & WEB AUDIO ENGINE ---
@@ -153,7 +157,6 @@ function setupWebAudio() {
     freqData = new Uint8Array(analyser.frequencyBinCount);
 }
 
-// SMOOTH AUDIO FADE IN / FADE OUT
 function fadeInAudio(audio, targetVol = 1.0, duration = 650) {
     clearInterval(fadeInterval);
     audio.volume = 0;
@@ -263,17 +266,13 @@ if (particleContainer) {
 
         if (isPlaying && analyser && freqData && audioEl.volume > 0.05) {
             analyser.getByteFrequencyData(freqData);
-
-            // BASS POWER (Bins 0 & 1 drive dots & lines strictly)
             const rawBass = (freqData[0] + freqData[1]) / 2;
             bassPower = Math.pow(rawBass / 255, 1.4) * audioEl.volume;
         }
 
-        // --- DOTS & LINES (BASS REACTIVE ONLY) ---
         for (let i = 0; i < particles.length; i++) {
             let p = particles[i];
 
-            // Displacement driven strictly by bass
             const displacement = bassPower * 1.5;
             p.x += p.vx + (Math.sin(i + performance.now() * 0.003) * displacement);
             p.y += p.vy + (Math.cos(i + performance.now() * 0.003) * displacement);
@@ -293,7 +292,6 @@ if (particleContainer) {
                 }
             }
 
-            // Dot sizing driven strictly by bass
             const dynamicRadius = p.radius + (bassPower * 3.5);
             const particleAlpha = isLight ? 0.95 : (0.85 + (bassPower * 0.15));
 
@@ -302,7 +300,6 @@ if (particleContainer) {
             ctx.fillStyle = `rgba(${particleRgb}, ${particleAlpha})`;
             ctx.fill();
 
-            // Mouse lines
             if (mouseActive) {
                 const dxM = mouseX - p.x;
                 const dyM = mouseY - p.y;
@@ -319,7 +316,6 @@ if (particleContainer) {
                 }
             }
 
-            // Neural net lines driven strictly by bass
             for (let j = i + 1; j < particles.length; j++) {
                 let p2 = particles[j];
                 const dx = p.x - p2.x;
@@ -376,3 +372,30 @@ if (soundBtn && audioEl) {
         }
     });
 }
+
+// --- PRELOADER ANIMATION SEQUENCE ---
+window.addEventListener('load', () => {
+    const preloader = document.getElementById('preloader');
+    const spinner = document.querySelector('.preloader-spinner');
+    const content = document.querySelector('.preloader-content');
+    const brandText = document.querySelector('.preloader-brand');
+
+    if (!preloader) return;
+
+    // Random duration greater than 4 seconds (4.2s - 6.5s)
+    const randomDelay = 4200 + Math.random() * 2300;
+
+    setTimeout(() => {
+        // Step 1: Hide spinner
+        if (spinner) spinner.classList.add('spinner-hidden');
+
+        // Step 2: Close/collapse text into logo & zoom logo centered
+        if (brandText) brandText.classList.add('text-closed');
+        if (content) content.classList.add('zoom-in');
+
+        // Step 3: Slowly fade out overlay into main site
+        setTimeout(() => {
+            preloader.classList.add('preloader-hidden');
+        }, 800); 
+    }, randomDelay);
+});
