@@ -10,9 +10,18 @@
 </head>
 <body data-theme="onyx">
 
+    <!-- INITIAL PRELOADER OVERLAY -->
+    <div id="preloader">
+        <div class="preloader-content">
+            <img src="FrequatorLogo.png" alt="Frequator Logo" class="preloader-logo">
+            <span class="preloader-brand">Frequator</span>
+        </div>
+        <div class="preloader-spinner"></div>
+    </div>
+
     <!-- Floating Dust Particles -->
     <div id="particles-container"></div>
-
+    
     <!-- Header Navigation with Collapsing Text -->
     <header id="main-header">
         <a href="#hero" class="brand">
@@ -31,7 +40,7 @@
                 </ul>
             </nav>
 
-            <a href="#newsletter" class="btn-outline">SIGN UP</a>
+            <a href="#newsletter" class="btn-outline">Sign Up</a>
 
             <!-- 3-Line Hamburger Dropdown Menu -->
             <div class="menu-container">
@@ -62,13 +71,13 @@
         <!-- Centered Hero Section -->
         <section id="hero" class="hero-futuristic">
             <div class="hero-content reveal-on-scroll">
-                <h1>The Ultimate Promotional<br>Powerhouse for Music.</h1>
-                <p>Tailored for labels, artists, and producers wanting to maximize worldwide streams. Submit your tracks for our music video clippers, live concert clippers, and elite lyric networks connected to music curators on YouTube, Spotify, All around Social Media and Music Platforms, helping them earned via Cost Per Mille (CPM) while you grow globally.</p>
+                <h1>A music platform built to turn<br>great songs into global hits</h1>
+                <p>We connect artists, producers, and labels with music curators across YouTube,<br>Spotify, and social platforms to help you reach millions of new fans worldwide.</p>
                 
                 <div class="hero-cta-center">
                     <button class="btn-invert-hover" onclick="triggerMusicExplosion(event); setTimeout(() => window.open('https://whop.com/frequator/frequator-artists-label-promotion-campaigns-for-independent-music-curators/', '_blank'), 400);">
                         <span class="btn-text-content">
-                            SEND MY MUSIC NOW 
+                            SEND MY MUSIC NOW
                             <img src="whoplogowhite.webp" alt="Whop Logo" class="btn-whop-logo">
                         </span>
                     </button>
@@ -216,8 +225,7 @@
         </div>
     </footer>
 
-    <!-- REPLACE WITH THIS: -->
-<audio id="bg-audio" preload="auto"></audio>
+    <audio id="bg-audio" preload="auto"></audio>
 
     <!-- FLOATING THEME SELECTOR (BOTTOM-LEFT) -->
     <div class="theme-picker-container" aria-label="Theme Selector">
